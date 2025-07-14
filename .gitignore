@@ -139,3 +139,4 @@ dist
 serviceAccountKey.json
 test.js
 blockradar-test.js
+deleteAllFirestoreData.js

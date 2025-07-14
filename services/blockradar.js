@@ -118,10 +118,25 @@ export const getTokenBalances = async (address) => {
   }
 };
 
+/**
+ * Fetch all transactions under the wallet
+ * @param {object} params - Optional query parameters (e.g., { limit: 10, page: 1 })
+ */
+export const getTransactions = async (params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`/wallets/${WALLET_ID}/transactions${query ? `?${query}` : ''}`, {
+    method: 'GET',
+  });
+};
+
+
+
 export default {
   createAddress,
   getAddress,
   listAddresses,
   listDeposits,
   getTokenBalances,
+  getTransactions,
+
 };

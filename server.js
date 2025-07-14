@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import transactionsRoutes from './routes/transactionsRoutes.js';
+
 
 // Load environment variables
 dotenv.config();
@@ -79,6 +81,11 @@ try {
   // Error loading user routes
 }
 
+try {
+  app.use('/api/transactions', transactionsRoutes);
+} catch (error) {
+}
+
 // 404 handler 
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -89,7 +96,8 @@ app.use('*', (req, res) => {
       'GET /health',
       'GET /debug',
       'POST /api/auth/*',
-      'GET /api/user/*'
+      'GET /api/user/*',
+      'GET /api/transactions/*'
     ]
   });
 });

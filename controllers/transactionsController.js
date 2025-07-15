@@ -26,17 +26,26 @@ export const getTransactionsByAddress = async (req, res) => {
     const { address } = req.params;
     const params = req.query;
 
-    // Find the address ID from the wallet
     const addressList = await blockradar.listAddresses();
+
+    console.log('📬 Incoming address:', address);
+    console.log('📦 Available addresses:', addressList.addresses.map(a => a.address));
+
     const found = addressList.addresses.find(
-      (addr) => addr.address.toLowerCase() === address.toLowerCase()
+      (addr) => addr.address.toLowerCase().trim() === address.toLowerCase().trim()
     );
 
     if (!found) {
+      console.warn('❌ Address not found in wallet:', address);
       return res.status(404).json({ error: 'Address not found in wallet' });
     }
 
+    console.log('✅ Matched address ID:', found.id);
+
     const result = await blockradar.getAddressTransactions(found.id, params);
+
+    console.log('📈 Transactions count:', result?.transactions?.length || 0);
+
     res.status(200).json(result);
   } catch (error) {
     console.error('❌ Error fetching transactions by address:', error.message);

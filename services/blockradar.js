@@ -129,6 +129,17 @@ export const getTransactions = async (params = {}) => {
   });
 };
 
+/**
+ * Get transactions for a specific address
+ * @param {string} addressId - Blockradar address ID
+ * @param {object} params - Optional query parameters (e.g., { limit, page })
+ */
+export const getAddressTransactions = async (addressId, params = {}) => {
+  const query = new URLSearchParams(params).toString();
+  return request(`/wallets/${WALLET_ID}/addresses/${addressId}/transactions${query ? `?${query}` : ''}`, {
+    method: 'GET',
+  });
+};
 
 
 export default {
@@ -138,5 +149,5 @@ export default {
   listDeposits,
   getTokenBalances,
   getTransactions,
-
+  getAddressTransactions, 
 };

@@ -19,36 +19,36 @@ export const getAllTransactions = async (req, res) => {
 
 /**
  * GET /api/transactions/:address
- * Fetch transactions for a specific address (public address string)
  */
 export const getTransactionsByAddress = async (req, res) => {
   try {
     const { address } = req.params;
-    const params = req.query;
+    const lowercaseAddress = address.toLowerCase();
 
-    const addressList = await blockradar.listAddresses();
+    console.log('🔎 Fetching all transactions to filter by address:', lowercaseAddress);
 
-    console.log('📬 Incoming address:', address);
-    console.log('📦 Available addresses:', addressList.addresses.map(a => a.address));
+    // Get all transactions
+    const allTxs = await blockradar.getTransactions();
 
-    const found = addressList.addresses.find(
-      (addr) => addr.address.toLowerCase().trim() === address.toLowerCase().trim()
+    const filtered = allTxs.data.filter((tx) =>
+      [
+        tx.senderAddress,
+        tx.recipientAddress,
+        tx.assetSweptSenderAddress,
+        tx.assetSweptRecipientAddress,
+      ]
+        .filter(Boolean)
+        .some((addr) => addr.toLowerCase() === lowercaseAddress)
     );
 
-    if (!found) {
-      console.warn('❌ Address not found in wallet:', address);
-      return res.status(404).json({ error: 'Address not found in wallet' });
-    }
-
-    console.log('✅ Matched address ID:', found.id);
-
-    const result = await blockradar.getAddressTransactions(found.id, params);
-
-    console.log('📈 Transactions count:', result?.transactions?.length || 0);
-
-    res.status(200).json(result);
+    return res.status(200).json({
+      message: 'Filtered transactions for address',
+      statusCode: 200,
+      count: filtered.length,
+      data: filtered,
+    });
   } catch (error) {
-    console.error('❌ Error fetching transactions by address:', error.message);
-    res.status(500).json({ error: 'Failed to fetch transactions for address' });
+    console.error('❌ Error filtering transactions by address:', error.message);
+    res.status(500).json({ error: 'Failed to filter transactions by address' });
   }
 };

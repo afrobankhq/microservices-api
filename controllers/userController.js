@@ -126,3 +126,33 @@ export const getUserWallet = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch wallet address' });
   }
 };
+
+
+export const saveUserInfo = async (req, res) => {
+  try {
+    const { firstname, lastname, email, tier, joined } = req.body;
+    const phoneNumber = decodeURIComponent(req.params.phoneNumber);
+
+    if (!firstname || !lastname || !email) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const userRef = db.collection('users').doc(phoneNumber);
+
+    await userRef.set(
+      {
+        firstname,
+        lastname,
+        email,
+        tier,
+        joined,
+      },
+      { merge: true } // 🔁 merge ensures existing fields (like walletAddress) are not overwritten
+    );
+
+    return res.status(200).json({ message: 'User info saved successfully' });
+  } catch (err) {
+    console.error('Error saving user info:', err);
+    return res.status(500).json({ error: 'Failed to save user info' });
+  }
+};

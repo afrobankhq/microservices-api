@@ -8,44 +8,31 @@ const CNGN_CONTRACTS = {
 
 export const getUserDashboard = async (req, res) => {
   try {
-    // 🔓 Decode the phone number to handle %2B -> +
     const encodedPhoneNumber = req.params.phoneNumber;
     const phoneNumber = decodeURIComponent(encodedPhoneNumber);
     console.log('📲 Dashboard request for:', phoneNumber);
 
-    // 🔍 Fetch user from Firestore
     const userSnapshot = await db.collection('users').doc(phoneNumber).get();
-    console.log('📁 Firebase userSnapshot.exists:', userSnapshot.exists);
-
     if (!userSnapshot.exists) {
-      console.log('❌ User not found');
       return res.status(404).json({ error: 'User not found' });
     }
 
     const user = userSnapshot.data();
-    console.log('✅ User data:', user);
-
     const { walletAddress, blockchain } = user;
 
     if (!walletAddress || !blockchain) {
-      console.log('⚠️ Missing walletAddress or blockchain');
       return res.status(400).json({ error: 'User does not have a blockchain wallet' });
     }
 
-    console.log('🧠 Fetching token balances for:', walletAddress);
     const balances = await blockradar.getTokenBalances(walletAddress);
-    console.log('💰 Token balances:', balances);
-
     const CNGNContract = CNGN_CONTRACTS[blockchain.toLowerCase()];
     if (!CNGNContract) {
-      console.log('⚠️ Unsupported blockchain:', blockchain);
       return res.status(400).json({ error: 'CNGN not supported on this chain' });
     }
 
     const CNGN = balances.tokens?.find(
       (token) => token.contract_address.toLowerCase() === CNGNContract.toLowerCase()
     );
-    console.log('✅ Found CNGN token:', CNGN);
 
     const result = {
       phoneNumber,
@@ -55,10 +42,87 @@ export const getUserDashboard = async (req, res) => {
       CNGNSymbol: CNGN ? CNGN.symbol : 'cNGN',
     };
 
-    console.log('📤 Sending response:', result);
     return res.json(result);
   } catch (error) {
     console.error('🔥 Error in getUserDashboard:', error);
     return res.status(500).json({ error: 'Failed to fetch user dashboard' });
+  }
+};
+
+export const updateUserProfile = async (req, res) => {
+  try {
+    const encodedPhoneNumber = req.params.phoneNumber;
+    const phoneNumber = decodeURIComponent(encodedPhoneNumber);
+    console.log('📝 Updating profile for:', phoneNumber);
+
+    const { firstName, lastName, email } = req.body;
+
+    // Basic validation
+    if (!firstName || !lastName || !email) {
+      return res.status(400).json({ error: 'First name, last name, and email are required' });
+    }
+
+    const userRef = db.collection('users').doc(phoneNumber);
+    const userSnapshot = await userRef.get();
+
+    if (!userSnapshot.exists) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await userRef.update({
+      firstName,
+      lastName,
+      email,
+      updatedAt: new Date().toISOString(),
+    });
+
+    console.log('✅ User profile updated');
+    return res.json({ message: 'User profile updated successfully' });
+  } catch (error) {
+    console.error('🔥 Error in updateUserProfile:', error);
+    return res.status(500).json({ error: 'Failed to update user profile' });
+  }
+};
+
+export const getUserInfo = async (req, res) => {
+  try {
+    const phoneNumber = decodeURIComponent(req.params.phoneNumber);
+    console.log('📄 Fetching user info for:', phoneNumber);
+
+    const userSnapshot = await db.collection('users').doc(phoneNumber).get();
+
+    if (!userSnapshot.exists) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userData = userSnapshot.data();
+    return res.json(userData);
+  } catch (error) {
+    console.error('🔥 Error in getUserInfo:', error);
+    return res.status(500).json({ error: 'Failed to fetch user info' });
+  }
+};
+
+export const getUserWallet = async (req, res) => {
+  try {
+    const phoneNumber = decodeURIComponent(req.params.phoneNumber);
+    console.log('💳 Fetching wallet for:', phoneNumber);
+
+    const userSnapshot = await db.collection('users').doc(phoneNumber).get();
+
+    if (!userSnapshot.exists) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const userData = userSnapshot.data();
+
+    if (!userData.walletAddress) {
+      return res.status(400).json({ error: 'Wallet address not set for user' });
+    }
+
+    return res.json({ walletAddress: userData.walletAddress });
+  } catch (error) {
+    console.error('🔥 Error in getUserWallet:', error);
+    return res.status(500).json({ error: 'Failed to fetch wallet address' });
   }
 };

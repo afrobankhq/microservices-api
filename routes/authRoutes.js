@@ -1,5 +1,7 @@
 import express from 'express';
 import AfricasTalking from 'africastalking';
+import { db } from '../firebase.js'; 
+import { collection, doc, setDoc, getDoc, deleteDoc, addDoc } from 'firebase/firestore';
 import {
   registerUser,
   loginUser,
@@ -15,18 +17,18 @@ const router = express.Router();
 // Africa's Talking SMS Setup
 // ===================
 const credentials = {
-  apiKey: 'MyAppAPIkey',       // 🔁 Replace with your actual API key
-  username: 'MyAppUsername',   // 🔁 Replace with your actual username
+  apiKey: process.env.AFRICAS_TALKING_APIKEY,       
+  username: process.env.AFRICAS_TALKING_USERNAME,
 };
 
 const africasTalking = AfricasTalking(credentials);
 const sms = africasTalking.SMS;
 
 // ===================
-// In-memory Stores (Use Redis or DB in production)
+// Firestore Collections
 // ===================
-const otpStore = new Map();
-const verifiedNumbers = new Set();
+const OTP_COLLECTION = 'otps';
+const VERIFIED_NUMBERS_COLLECTION = 'verified_numbers';
 
 // ===================
 // Helper Functions
@@ -53,6 +55,103 @@ async function sendOTPViaSMS(phoneNumber, otp) {
   }
 }
 
+// Store OTP in Firestore
+async function storeOTP(phoneNumber, otp, expiresAt) {
+  try {
+    const otpDoc = doc(db, OTP_COLLECTION, phoneNumber);
+    await setDoc(otpDoc, {
+      otp,
+      expiresAt,
+      createdAt: Date.now(),
+    });
+    return true;
+  } catch (error) {
+    console.error('Error storing OTP:', error);
+    return false;
+  }
+}
+
+// Get OTP from Firestore
+async function getOTP(phoneNumber) {
+  try {
+    const otpDoc = doc(db, OTP_COLLECTION, phoneNumber);
+    const docSnap = await getDoc(otpDoc);
+    
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting OTP:', error);
+    return null;
+  }
+}
+
+// Delete OTP from Firestore
+async function deleteOTP(phoneNumber) {
+  try {
+    const otpDoc = doc(db, OTP_COLLECTION, phoneNumber);
+    await deleteDoc(otpDoc);
+    return true;
+  } catch (error) {
+    console.error('Error deleting OTP:', error);
+    return false;
+  }
+}
+
+// Add verified number to Firestore
+async function addVerifiedNumber(phoneNumber) {
+  try {
+    const verifiedDoc = doc(db, VERIFIED_NUMBERS_COLLECTION, phoneNumber);
+    const expiresAt = Date.now() + (10 * 60 * 1000); // 10 minutes
+    
+    await setDoc(verifiedDoc, {
+      phoneNumber,
+      verifiedAt: Date.now(),
+      expiresAt,
+    });
+    return true;
+  } catch (error) {
+    console.error('Error adding verified number:', error);
+    return false;
+  }
+}
+
+// Check if number is verified
+async function isNumberVerified(phoneNumber) {
+  try {
+    const verifiedDoc = doc(db, VERIFIED_NUMBERS_COLLECTION, phoneNumber);
+    const docSnap = await getDoc(verifiedDoc);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      
+      // Check if verification has expired
+      if (Date.now() > data.expiresAt) {
+        await deleteDoc(verifiedDoc); // Clean up expired verification
+        return false;
+      }
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error checking verified number:', error);
+    return false;
+  }
+}
+
+// Delete verified number from Firestore
+async function deleteVerifiedNumber(phoneNumber) {
+  try {
+    const verifiedDoc = doc(db, VERIFIED_NUMBERS_COLLECTION, phoneNumber);
+    await deleteDoc(verifiedDoc);
+    return true;
+  } catch (error) {
+    console.error('Error deleting verified number:', error);
+    return false;
+  }
+}
+
 // ===================
 // Routes
 // ===================
@@ -68,7 +167,11 @@ router.post('/send-otp', async (req, res) => {
   try {
     const otp = generateOTP();
     const expirationTime = Date.now() + (5 * 60 * 1000); // 5 mins
-    otpStore.set(phoneNumber, { otp, expiresAt: expirationTime });
+    
+    const stored = await storeOTP(phoneNumber, otp, expirationTime);
+    if (!stored) {
+      return res.status(500).json({ error: 'Failed to store OTP' });
+    }
 
     const sent = await sendOTPViaSMS(phoneNumber, otp);
     if (!sent) {
@@ -94,20 +197,19 @@ router.post('/verify-otp', async (req, res) => {
   }
 
   try {
-    const stored = otpStore.get(phoneNumber);
+    const stored = await getOTP(phoneNumber);
     if (!stored) {
       return res.status(400).json({ error: 'No OTP found for this phone number' });
     }
 
     if (Date.now() > stored.expiresAt) {
-      otpStore.delete(phoneNumber);
+      await deleteOTP(phoneNumber);
       return res.status(400).json({ error: 'OTP has expired' });
     }
 
     if (code === stored.otp) {
-      otpStore.delete(phoneNumber);
-      verifiedNumbers.add(phoneNumber);
-      setTimeout(() => verifiedNumbers.delete(phoneNumber), 10 * 60 * 1000); // Auto-clear
+      await deleteOTP(phoneNumber);
+      await addVerifiedNumber(phoneNumber);
 
       res.status(200).json({
         message: 'OTP verified successfully',
@@ -149,7 +251,11 @@ router.post('/resend-otp', async (req, res) => {
   try {
     const otp = generateOTP();
     const expirationTime = Date.now() + (5 * 60 * 1000); // 5 mins
-    otpStore.set(phoneNumber, { otp, expiresAt: expirationTime });
+    
+    const stored = await storeOTP(phoneNumber, otp, expirationTime);
+    if (!stored) {
+      return res.status(500).json({ error: 'Failed to store OTP' });
+    }
 
     const sent = await sendOTPViaSMS(phoneNumber, otp);
     if (!sent) {
@@ -167,14 +273,19 @@ router.post('/resend-otp', async (req, res) => {
 });
 
 // OTP Status Check (optional)
-router.get('/otp-status', (req, res) => {
+router.get('/otp-status', async (req, res) => {
   const { phoneNumber } = req.query;
   if (!phoneNumber) {
     return res.status(400).json({ error: 'Phone number is required' });
   }
 
-  const isVerified = verifiedNumbers.has(phoneNumber);
-  res.status(200).json({ phoneNumber, verified: isVerified });
+  try {
+    const isVerified = await isNumberVerified(phoneNumber);
+    res.status(200).json({ phoneNumber, verified: isVerified });
+  } catch (error) {
+    console.error('Error checking OTP status:', error);
+    res.status(500).json({ error: 'Failed to check OTP status' });
+  }
 });
 
 // Health check

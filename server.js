@@ -4,6 +4,7 @@ import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import transactionsRoutes from './routes/transactionsRoutes.js';
+import cardsRoutes from './routes/cardsRoutes.js';
 
 
 // Load environment variables
@@ -83,6 +84,11 @@ try {
 
 try {
   app.use('/api/transactions', transactionsRoutes);
+} catch (error) {
+}
+
+try {
+  app.use('/api/cards', cardsRoutes);
 } catch (error) {
 }
 

@@ -3,7 +3,9 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import transactionsRoutes from './routes/transactionsRoutes.js';
+import transactionsRoutes from './routes/blockchainTransactionsRoutes.js';
+import cardRoutes from './routes/cardRoutes.js';
+import billRoutes from './routes/billRoutes.js';
 
 
 // Load environment variables
@@ -71,21 +73,13 @@ app.get('/debug', (req, res) => {
 
 // API Routes
 try {
-  app.use('/api/auth', authRoutes);
-} catch (error) {
-}
-
-try {
+    app.use('/api/auth', authRoutes);
   app.use('/api/user', userRoutes);
-} catch (error) {
-  // Error loading user routes
-}
-
-try {
-  app.use('/api/transactions', transactionsRoutes);
+  app.use('/api/card', cardRoutes);
+  app.use('/api/bill', billRoutes);
+  app.use('/api/blockchain-transactions', blockchainTransactionsRoutes);
 } catch (error) {
 }
-
 
 
 // 404 handler 

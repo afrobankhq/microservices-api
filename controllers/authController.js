@@ -10,8 +10,8 @@ const validatePin = (pin) => {
   if (!pin || typeof pin !== 'string') {
     return { valid: false, message: 'PIN is required' };
   }
-  if (pin.length < 4 || pin.length > 6) {
-    return { valid: false, message: 'PIN must be between 4–6 digits' };
+  if (pin.length !== 6) {
+    return { valid: false, message: 'PIN must be exactly 6 digits' };
   }
   if (!/^\d+$/.test(pin)) {
     return { valid: false, message: 'PIN must contain only numbers' };

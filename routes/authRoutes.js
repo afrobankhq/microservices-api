@@ -1,5 +1,5 @@
 import express from 'express';
-import AfricasTalking from 'africastalking';
+// import AfricasTalking from 'africastalking'; // Commented out - no longer using SMS
 import { db } from '../firebase.js';
 import {
   registerUser,
@@ -51,20 +51,10 @@ router.use((req, res, next) => {
 });
 
 // ===================
-// Africa's Talking SMS Setup
+// Default OTP Configuration
 // ===================
-const credentials = {
-  apiKey: process.env.AFRICAS_TALKING_APIKEY,
-  username: process.env.AFRICAS_TALKING_USERNAME,
-};
-
-console.log('[AUTH ROUTES] Initializing Africa\'s Talking with credentials:', {
-  apiKey: credentials.apiKey ? '***SET***' : '***NOT SET***',
-  username: credentials.username ? '***SET***' : '***NOT SET***'
-});
-
-const africasTalking = AfricasTalking(credentials);
-const sms = africasTalking.SMS;
+const DEFAULT_OTP = '639140';
+console.log('[AUTH ROUTES] Using default OTP for all accounts:', DEFAULT_OTP);
 
 // ===================
 // Firestore Collections
@@ -75,63 +65,22 @@ const VERIFIED_NUMBERS_COLLECTION = 'verified_numbers';
 // ===================
 // Helper Functions
 // ===================
-function generateOTP() {
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  console.log('[generateOTP] Generated OTP:', otp);
-  return otp;
+// function generateOTP() {
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//   console.log('[generateOTP] Generated OTP:', otp);
+//   return otp;
+// }
+
+function getDefaultOTP() {
+  console.log('[getDefaultOTP] Using default OTP:', DEFAULT_OTP);
+  return DEFAULT_OTP;
 }
 
-async function sendOTPViaSMS(phoneNumber, otp) {
-  console.log('[sendOTPViaSMS] Attempting to send SMS to:', phoneNumber, 'with OTP:', otp);
-  
-  const options = {
-    to: [phoneNumber],
-    message: `Your verification code is: ${otp}`,
-    from: process.env.AFRICAS_TALKING_SENDER_ID || 'AFROBANK', // Use environment variable or default
-  };
-
-  console.log('[sendOTPViaSMS] SMS options:', {
-    to: options.to,
-    message: options.message,
-    from: options.from
-  });
-
-  try {
-    console.log('[sendOTPViaSMS] Sending SMS via Africa\'s Talking...');
-    const response = await sms.send(options);
-    console.log('[sendOTPViaSMS] SMS response:', response);
-    
-    // Check if the response indicates an error
-    if (response.SMSMessageData && response.SMSMessageData.Message === 'InvalidSenderId') {
-      console.error('[sendOTPViaSMS] Invalid sender ID error. Please check your Africa\'s Talking configuration.');
-      console.error('[sendOTPViaSMS] Current sender ID:', options.from);
-      console.error('[sendOTPViaSMS] Please set AFRICAS_TALKING_SENDER_ID in your environment variables with a valid sender ID.');
-      return false;
-    }
-    
-    if (response.SMSMessageData && response.SMSMessageData.Recipients && response.SMSMessageData.Recipients.length > 0) {
-      const recipient = response.SMSMessageData.Recipients[0];
-      if (recipient.status === 'Success') {
-        console.log('[sendOTPViaSMS] SMS sent successfully to:', recipient.number);
-        return true;
-      } else {
-        console.error('[sendOTPViaSMS] SMS sending failed:', recipient.status, recipient.statusCode);
-        return false;
-      }
-    } else {
-      console.error('[sendOTPViaSMS] No recipients in response or unexpected response format');
-      return false;
-    }
-  } catch (error) {
-    console.error('[sendOTPViaSMS] SMS sending failed:', error);
-    console.error('[sendOTPViaSMS] Error details:', {
-      message: error.message,
-      code: error.code,
-      stack: error.stack
-    });
-    return false;
-  }
-}
+// Commented out SMS functionality - no longer needed
+// async function sendOTPViaSMS(phoneNumber, otp) {
+//   console.log('[sendOTPViaSMS] SMS functionality disabled - using default OTP');
+//   return true; // Always return success since we're not actually sending SMS
+// }
 
 // Store OTP
 async function storeOTP(phoneNumber, otp, expiresAt) {
@@ -311,10 +260,10 @@ router.post('/send-otp', async (req, res) => {
   console.log('[POST /send-otp] Processing request for phone:', phoneNumber);
 
   try {
-    console.log('[POST /send-otp] Generating OTP...');
-    const otp = generateOTP();
+    console.log('[POST /send-otp] Using default OTP...');
+    const otp = getDefaultOTP();
     const expirationTime = Date.now() + 5 * 60 * 1000;
-    console.log('[POST /send-otp] OTP generated, expires at:', new Date(expirationTime));
+    console.log('[POST /send-otp] Default OTP set, expires at:', new Date(expirationTime));
 
     console.log('[POST /send-otp] Storing OTP in database...');
     const stored = await storeOTP(phoneNumber, otp, expirationTime);
@@ -323,15 +272,13 @@ router.post('/send-otp', async (req, res) => {
       return res.status(500).json({ error: 'Failed to store OTP' });
     }
 
-    console.log('[POST /send-otp] Sending OTP via SMS...');
-    const sent = await sendOTPViaSMS(phoneNumber, otp);
-    if (!sent) {
-      console.log('[POST /send-otp] Failed to send OTP via SMS, returning error');
-      return res.status(500).json({ error: 'Failed to send OTP via SMS' });
-    }
-
-    console.log('[POST /send-otp] OTP sent successfully, sending response');
-    res.status(200).json({ message: 'OTP sent successfully', phoneNumber });
+    console.log('[POST /send-otp] OTP stored successfully (SMS sending skipped - using default OTP)');
+    console.log('[POST /send-otp] Default OTP sent successfully, sending response');
+    res.status(200).json({ 
+      message: 'OTP sent successfully', 
+      phoneNumber,
+      note: 'Using default OTP for development: 639140'
+    });
   } catch (error) {
     console.error('[POST /send-otp] Unexpected error:', error);
     console.error('[POST /send-otp] Error details:', {
@@ -414,10 +361,10 @@ router.post('/resend-otp', async (req, res) => {
   console.log('[POST /resend-otp] Processing resend request for phone:', phoneNumber);
 
   try {
-    console.log('[POST /resend-otp] Generating new OTP...');
-    const otp = generateOTP();
+    console.log('[POST /resend-otp] Using default OTP...');
+    const otp = getDefaultOTP();
     const expirationTime = Date.now() + 5 * 60 * 1000;
-    console.log('[POST /resend-otp] New OTP generated, expires at:', new Date(expirationTime));
+    console.log('[POST /resend-otp] Default OTP set, expires at:', new Date(expirationTime));
 
     console.log('[POST /resend-otp] Storing new OTP in database...');
     const stored = await storeOTP(phoneNumber, otp, expirationTime);
@@ -426,15 +373,13 @@ router.post('/resend-otp', async (req, res) => {
       return res.status(500).json({ error: 'Failed to store OTP' });
     }
 
-    console.log('[POST /resend-otp] Sending new OTP via SMS...');
-    const sent = await sendOTPViaSMS(phoneNumber, otp);
-    if (!sent) {
-      console.log('[POST /resend-otp] Failed to send new OTP via SMS, returning error');
-      return res.status(500).json({ error: 'Failed to resend OTP via SMS' });
-    }
-
+    console.log('[POST /resend-otp] Default OTP stored successfully (SMS sending skipped)');
     console.log('[POST /resend-otp] New OTP sent successfully, sending response');
-    res.status(200).json({ message: 'OTP resent successfully', phoneNumber });
+    res.status(200).json({ 
+      message: 'OTP resent successfully', 
+      phoneNumber,
+      note: 'Using default OTP for development: 639140'
+    });
   } catch (error) {
     console.error('[POST /resend-otp] Unexpected error:', error);
     console.error('[POST /resend-otp] Error details:', {

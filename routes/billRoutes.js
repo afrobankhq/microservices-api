@@ -11,10 +11,7 @@ import { authenticate } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-// Apply authentication middleware to all routes
-router.use(authenticate);
-
-// Get all bill categories
+// Get all bill categories (temporarily without auth for testing)
 router.get('/categories', fetchBillCategories);
 
 // Get items in a specific bill category

@@ -5,6 +5,13 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import transactionsRoutes from './routes/blockchainTransactionsRoutes.js';
 import billRoutes from './routes/billRoutes.js';
+import billsRoutes from './routes/billsRoutes.js';
+import cardsRoutes from './routes/cardsRoutes.js';
+import walletRoutes from './routes/walletRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
+import transactionsRoutes from './routes/transactionsRoutes.js';
+import supportRoutes from './routes/supportRoutes.js';
+import commonRoutes from './routes/commonRoutes.js';
 
 
 // Load environment variables
@@ -133,11 +140,21 @@ app.get('/debug', (req, res) => {
 
 // API Routes
 try {
-    app.use('/api/auth', authRoutes);
-  app.use('/api/user', userRoutes)
+  app.use('/api/auth', authRoutes);
+  app.use('/api/user', userRoutes);
   app.use('/api/bill', billRoutes);
   app.use('/api/blockchain-transactions', blockchainTransactionsRoutes);
+  
+  // New routes for hardcoded data
+  app.use('/api/bills', billsRoutes);
+  app.use('/api/cards', cardsRoutes);
+  app.use('/api/wallet', walletRoutes);
+  app.use('/api/profile', profileRoutes);
+  app.use('/api/transactions', transactionsRoutes);
+  app.use('/api/support', supportRoutes);
+  app.use('/api/common', commonRoutes);
 } catch (error) {
+  console.error('[SERVER] Error loading routes:', error);
 }
 
 
@@ -152,7 +169,13 @@ app.use('*', (req, res) => {
       'GET /debug',
       'POST /api/auth/*',
       'GET /api/user/*',
-      'GET /api/transactions/*'
+      'GET /api/bills/*',
+      'GET /api/cards/*',
+      'GET /api/wallet/*',
+      'GET /api/profile/*',
+      'GET /api/transactions/*',
+      'GET /api/support/*',
+      'GET /api/common/*'
     ]
   });
 });

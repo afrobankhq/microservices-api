@@ -1,0 +1,463 @@
+{
+  "billCategories": [
+    {
+      "id": 1,
+      "title": "Electricity",
+      "icon": "Zap",
+      "color": "#F59E0B",
+      "count": 2
+    },
+    {
+      "id": 2,
+      "title": "Internet",
+      "icon": "Wifi",
+      "color": "#3B82F6",
+      "count": 1
+    },
+    {
+      "id": 3,
+      "title": "Mobile",
+      "icon": "Smartphone",
+      "color": "#10B981",
+      "count": 3
+    },
+    {
+      "id": 4,
+      "title": "Insurance",
+      "icon": "Car",
+      "color": "#EF4444",
+      "count": 2
+    },
+    {
+      "id": 5,
+      "title": "Rent",
+      "icon": "Home",
+      "color": "#8B5CF6",
+      "count": 1
+    },
+    {
+      "id": 6,
+      "title": "Education",
+      "icon": "GraduationCap",
+      "color": "#F97316",
+      "count": 1
+    },
+    {
+      "id": 7,
+      "title": "Healthcare",
+      "icon": "Heart",
+      "color": "#EC4899",
+      "count": 2
+    },
+    {
+      "id": 8,
+      "title": "Others",
+      "icon": "MoreHorizontal",
+      "color": "#6B7280",
+      "count": 5
+    }
+  ],
+  "upcomingBills": [
+    {
+      "id": 1,
+      "title": "Electricity Bill",
+      "provider": "City Power",
+      "amount": "cNGN 89.50",
+      "dueDate": "Due in 2 days",
+      "status": "pending"
+    },
+    {
+      "id": 2,
+      "title": "Internet Bill",
+      "provider": "FastNet",
+      "amount": "cNGN 45.00",
+      "dueDate": "Due in 5 days",
+      "status": "pending"
+    },
+    {
+      "id": 3,
+      "title": "Mobile Bill",
+      "provider": "TelCorp",
+      "amount": "cNGN 32.99",
+      "dueDate": "Due in 7 days",
+      "status": "pending"
+    }
+  ],
+  "cards": {
+    "virtualCard": {
+      "cardNumber": "1234567812345678",
+      "maskedCardNumber": "1234 **** **** 5678",
+      "cardHolderName": "John Doe",
+      "expiryDate": "12/26",
+      "cardType": "Virtual Card",
+      "cardLabel": "Virtual Card"
+    },
+    "walletCards": [
+      {
+        "id": 1,
+        "type": "Main Card",
+        "number": "•••• •••• •••• 1234",
+        "balance": "$12,547.80",
+        "color": ["#2563EB", "#1D4ED8"]
+      },
+      {
+        "id": 2,
+        "type": "Savings Card",
+        "number": "•••• •••• •••• 5678",
+        "balance": "$8,240.50",
+        "color": ["#059669", "#047857"]
+      }
+    ]
+  },
+  "walletOptions": [
+    {
+      "id": 1,
+      "title": "Link Bank Account",
+      "icon": "Building2",
+      "description": "Connect your bank account"
+    },
+    {
+      "id": 2,
+      "title": "Add Debit Card",
+      "icon": "CreditCard",
+      "description": "Add a new payment method"
+    },
+    {
+      "id": 3,
+      "title": "Mobile Money",
+      "icon": "Smartphone",
+      "description": "Connect mobile wallet"
+    },
+    {
+      "id": 4,
+      "title": "Cash Pickup",
+      "icon": "Banknote",
+      "description": "Find pickup locations"
+    }
+  ],
+  "profileOptions": [
+    {
+      "id": 1,
+      "title": "Personal Information",
+      "icon": "User",
+      "color": "#2563EB"
+    },
+    {
+      "id": 2,
+      "title": "Security & Privacy",
+      "icon": "Shield",
+      "color": "#059669"
+    },
+    {
+      "id": 3,
+      "title": "Notifications",
+      "icon": "Bell",
+      "color": "#F59E0B"
+    },
+    {
+      "id": 4,
+      "title": "Payment Methods",
+      "icon": "CreditCard",
+      "color": "#7C3AED"
+    },
+    {
+      "id": 5,
+      "title": "Help & Support",
+      "icon": "HelpCircle",
+      "color": "#0D9488"
+    }
+  ],
+  "transactionFilters": {
+    "history": ["All", "Income", "Expense", "Transfer"],
+    "transactionHistory": ["All", "Deposits", "Withdrawals"]
+  },
+  "transactionTypes": {
+    "income": {
+      "icon": "ArrowDownLeft",
+      "color": "#059669"
+    },
+    "expense": {
+      "icon": "ArrowUpRight",
+      "color": "#DC2626"
+    },
+    "transfer": {
+      "icon": "ArrowUpRight",
+      "color": "#2563EB"
+    },
+    "deposit": {
+      "icon": "ArrowDownLeft",
+      "color": "#059669"
+    },
+    "withdrawal": {
+      "icon": "ArrowUpRight",
+      "color": "#DC2626"
+    }
+  },
+  "cardTypes": [
+    {
+      "value": "debit",
+      "label": "Debit Card"
+    },
+    {
+      "value": "credit",
+      "label": "Credit Card"
+    }
+  ],
+  "countryCodes": [
+    {
+      "label": "+1 (US)",
+      "value": "+1"
+    },
+    {
+      "label": "+44 (UK)",
+      "value": "+44"
+    },
+    {
+      "label": "+234 (NG)",
+      "value": "+234"
+    },
+    {
+      "label": "+91 (IN)",
+      "value": "+91"
+    },
+    {
+      "label": "+33 (FR)",
+      "value": "+33"
+    }
+  ],
+  "defaultValues": {
+    "defaultCountryCode": "+234",
+    "defaultCardholderName": "",
+    "defaultCardType": "",
+    "defaultWalletAddress": "0xYourAddressHere",
+    "defaultPageSize": 5,
+    "defaultLoadingTimeout": 1500
+  },
+  "summaryCards": {
+    "totalIncome": {
+      "label": "Total Income",
+      "value": "N/A",
+      "color": "#059669"
+    },
+    "totalExpense": {
+      "label": "Total Expense",
+      "value": "N/A",
+      "color": "#DC2626"
+    }
+  },
+  "cardDetails": {
+    "name": "John Doe",
+    "expiry": "12/26",
+    "cardType": "Virtual Card",
+    "status": "Active"
+  },
+  "quickActions": [
+    {
+      "id": 1,
+      "title": "Send Money",
+      "icon": "Send",
+      "color": "#2563EB"
+    },
+    {
+      "id": 2,
+      "title": "Receive Money",
+      "icon": "Download",
+      "color": "#059669"
+    },
+    {
+      "id": 3,
+      "title": "Add Money",
+      "icon": "Plus",
+      "color": "#F59E0B"
+    }
+  ],
+  "billProviders": {
+    "electricity": [
+      {
+        "id": 1,
+        "name": "City Power",
+        "code": "CITYPOWER"
+      },
+      {
+        "id": 2,
+        "name": "National Grid",
+        "code": "NATGRID"
+      }
+    ],
+    "internet": [
+      {
+        "id": 1,
+        "name": "FastNet",
+        "code": "FASTNET"
+      },
+      {
+        "id": 2,
+        "name": "BroadBand",
+        "code": "BROADBAND"
+      }
+    ],
+    "mobile": [
+      {
+        "id": 1,
+        "name": "TelCorp",
+        "code": "TELCORP"
+      },
+      {
+        "id": 2,
+        "name": "MobileNet",
+        "code": "MOBILENET"
+      }
+    ]
+  },
+  "transactionSummary": {
+    "periods": ["Today", "This Week", "This Month", "This Year"],
+    "categories": ["Food", "Transport", "Shopping", "Bills", "Entertainment", "Others"]
+  },
+  "notificationSettings": {
+    "types": [
+      {
+        "id": 1,
+        "title": "Transaction Alerts",
+        "description": "Get notified of all transactions",
+        "enabled": true
+      },
+      {
+        "id": 2,
+        "title": "Bill Reminders",
+        "description": "Reminders for upcoming bills",
+        "enabled": true
+      },
+      {
+        "id": 3,
+        "title": "Security Alerts",
+        "description": "Important security notifications",
+        "enabled": true
+      },
+      {
+        "id": 4,
+        "title": "Promotional",
+        "description": "Offers and promotions",
+        "enabled": false
+      }
+    ]
+  },
+  "securitySettings": {
+    "options": [
+      {
+        "id": 1,
+        "title": "Change PIN",
+        "description": "Update your 6-digit PIN"
+      },
+      {
+        "id": 2,
+        "title": "Two-Factor Authentication",
+        "description": "Add an extra layer of security",
+        "enabled": false
+      },
+      {
+        "id": 3,
+        "title": "Biometric Login",
+        "description": "Use fingerprint or face ID",
+        "enabled": true
+      },
+      {
+        "id": 4,
+        "title": "Login Alerts",
+        "description": "Get notified of new logins",
+        "enabled": true
+      }
+    ]
+  },
+  "helpSupport": {
+    "categories": [
+      {
+        "id": 1,
+        "title": "Account Issues",
+        "icon": "User",
+        "description": "Problems with your account"
+      },
+      {
+        "id": 2,
+        "title": "Payment Problems",
+        "icon": "CreditCard",
+        "description": "Issues with payments"
+      },
+      {
+        "id": 3,
+        "title": "Security Concerns",
+        "icon": "Shield",
+        "description": "Security and privacy"
+      },
+      {
+        "id": 4,
+        "title": "Technical Support",
+        "icon": "Settings",
+        "description": "App and technical issues"
+      }
+    ],
+    "faq": [
+      {
+        "id": 1,
+        "question": "How do I change my PIN?",
+        "answer": "Go to Settings > Security > Change PIN"
+      },
+      {
+        "id": 2,
+        "question": "How do I add a payment method?",
+        "answer": "Go to Wallet > Add Payment Method"
+      },
+      {
+        "id": 3,
+        "question": "How do I report a transaction?",
+        "answer": "Go to the transaction and tap 'Report Issue'"
+      }
+    ]
+  },
+  "dashboardWidgets": [
+    {
+      "id": 1,
+      "type": "balance",
+      "title": "Account Balance",
+      "visible": true
+    },
+    {
+      "id": 2,
+      "type": "quickActions",
+      "title": "Quick Actions",
+      "visible": true
+    },
+    {
+      "id": 3,
+      "type": "recentTransactions",
+      "title": "Recent Transactions",
+      "visible": true
+    },
+    {
+      "id": 4,
+      "type": "upcomingBills",
+      "title": "Upcoming Bills",
+      "visible": true
+    }
+  ],
+  "appSettings": {
+    "theme": "light",
+    "language": "en",
+    "currency": "NGN",
+    "timezone": "Africa/Lagos",
+    "dateFormat": "DD/MM/YYYY",
+    "timeFormat": "12h"
+  },
+  "apiEndpoints": {
+    "baseUrls": {
+      "primary": "https://afrobank-backend-api-temp.vercel.app",
+      "secondary": "https://afrobank-backend-api.vercel.com",
+      "userInfo": "https://afrobank-api.vercel.app/api",
+      "transactions": "https://afrobank-backend-api-temp.vercel.app/api"
+    },
+    "timeouts": {
+      "request": 30000,
+      "loading": 2000,
+      "cardCreation": 1500
+    }
+  }
+} 

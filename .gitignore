@@ -140,3 +140,7 @@ serviceAccountKey.json
 test.js
 blockradar-test.js
 deleteAllFirestoreData.js
+debug-bill-api.js
+test-bill-api-step-by-step.js
+test-bill-categories.js
+test-data-category.js

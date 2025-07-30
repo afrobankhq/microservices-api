@@ -1,4 +1,8 @@
 import fetch from 'node-fetch';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 export const SWERVPAY_BASE_URL = process.env.NODE_ENV === 'production' 
   ? 'https://api.swervpay.co/api/v1'

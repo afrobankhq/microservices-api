@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import transactionsRoutes from './routes/blockchainTransactionsRoutes.js';
+import blockchainTransactionsRoutes from './routes/blockchainTransactionsRoutes.js';
 import billRoutes from './routes/billRoutes.js';
 import billsRoutes from './routes/billsRoutes.js';
 import cardsRoutes from './routes/cardsRoutes.js';

@@ -1,5 +1,11 @@
 import express from 'express';
-import hardcodedData from '../hardcoded-data.json' assert { type: 'json' };
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const hardcodedData = JSON.parse(fs.readFileSync(path.join(__dirname, '../hardcoded-data.json'), 'utf8'));
 
 const router = express.Router();
 

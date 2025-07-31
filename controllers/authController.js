@@ -23,7 +23,7 @@ const validatePin = (pin) => {
  * Register user with phone number and PIN (after OTP verification)
  */
 export const registerUser = async (req, res) => {
-  const { phoneNumber, pin } = req.body;
+  const { phoneNumber, pin, firstName, lastName, email } = req.body;
 
   if (!phoneNumber || !pin) {
     return res.status(400).json({ error: 'Phone number and PIN are required' });
@@ -72,6 +72,13 @@ export const registerUser = async (req, res) => {
       walletId,
       createdAt: new Date(),
       updatedAt: new Date(),
+
+      // New fields
+      firstName: firstName || '',
+      lastName: lastName || '',
+      email: email || '',
+      tier: 'First Tier',
+      image: 'default.jpeg',
     };
 
     await userRef.set(userData);
@@ -86,6 +93,11 @@ export const registerUser = async (req, res) => {
         blockchain,
         walletAddress: address,
         walletId,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        email: userData.email,
+        tier: userData.tier,
+        image: userData.image,
       },
     });
   } catch (error) {

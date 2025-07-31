@@ -18,7 +18,15 @@ export const getUserDashboard = async (req, res) => {
     }
 
     const user = userSnapshot.data();
-    const { walletAddress, blockchain } = user;
+    const {
+      walletAddress,
+      blockchain,
+      firstName,
+      lastName,
+      email,
+      tier,
+      image
+    } = user;
 
     if (!walletAddress || !blockchain) {
       return res.status(400).json({ error: 'User does not have a blockchain wallet' });
@@ -36,6 +44,11 @@ export const getUserDashboard = async (req, res) => {
 
     const result = {
       phoneNumber,
+      firstName: firstName || '',
+      lastName: lastName || '',
+      email: email || '',
+      tier: tier || 'Tier 1',
+      image: image || '',
       walletAddress,
       blockchain,
       CNGNBalance: CNGN ? CNGN.balance : '0',
@@ -48,6 +61,7 @@ export const getUserDashboard = async (req, res) => {
     return res.status(500).json({ error: 'Failed to fetch user dashboard' });
   }
 };
+
 
 export const updateUserProfile = async (req, res) => {
   try {

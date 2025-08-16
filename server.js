@@ -7,6 +7,7 @@ import blockchainTransactionsRoutes from './routes/blockchainTransactionsRoutes.
 import billRoutes from './routes/billRoutes.js';
 import billsRoutes from './routes/billsRoutes.js';
 import cardsRoutes from './routes/cardsRoutes.js';
+import cardCustomersRoutes from './routes/cardCustomersRoutes.js';
 import walletRoutes from './routes/walletRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import transactionsRoutes from './routes/transactionsRoutes.js';
@@ -148,6 +149,7 @@ try {
   // New routes for hardcoded data
   app.use('/api/bills', billsRoutes);
   app.use('/api/cards', cardsRoutes);
+  app.use('/api/card-customers', cardCustomersRoutes);
   app.use('/api/wallet', walletRoutes);
   app.use('/api/profile', profileRoutes);
   app.use('/api/transactions', transactionsRoutes);
@@ -171,6 +173,7 @@ app.use('*', (req, res) => {
       'GET /api/user/*',
       'GET /api/bills/*',
       'GET /api/cards/*',
+      'GET /api/card-customers/*',
       'GET /api/wallet/*',
       'GET /api/profile/*',
       'GET /api/transactions/*',
